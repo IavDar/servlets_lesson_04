@@ -44,18 +44,55 @@ public class CarRepositoryHibernate implements CarRepository{
     @Override
     public List<Car> getAll() {
         //дз без транзакции
-        return List.of();
+
+        return entityManager.createQuery("SELECT id,brand,price,year FROM Car")
+                .getResultList();
     }
 
     @Override
     public Car update(Car car) {
         //дз с транзакц
-        return null;
+
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+
+            entityManager.merge(car);
+
+            transaction.commit();
+            return car;
+
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Transaction cancelled");
+
+        }
+
     }
 
     @Override
     public void delete(Long id) {
         //дз с транзакц
+
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            Car car = this.getById(id);
+
+            transaction.begin();
+
+            entityManager.remove(car);
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("Transaction cancelled");
+
+        }
 
     }
 }
