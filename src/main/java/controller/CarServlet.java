@@ -13,7 +13,9 @@ import service.CarServiceImpl;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CarServlet extends HttpServlet {
 
@@ -34,7 +36,9 @@ public class CarServlet extends HttpServlet {
         // "id" : ["3"]
 
         if (params.isEmpty()) {
-            // TODO домашнее задание
+            List<Car> carList = service.getAll();
+            resp.getWriter().write(carList.toString());
+
         } else {
             Long id = Long.parseLong(params.get("id")[0]);
             Car car = service.getById(id);
@@ -80,5 +84,18 @@ public class CarServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // TODO домашнее задание
+
+        Map<String, String[]> params = req.getParameterMap();
+
+        if (params.isEmpty()) {
+            // TODO домашнее задание
+            resp.getWriter().write("Id is empty");
+        } else {
+            Long id = Long.parseLong(params.get("id")[0]);
+
+            service.delete(id);
+
+            resp.getWriter().write("DELETED");
+        }
     }
 }
